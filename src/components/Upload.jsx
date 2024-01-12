@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 const Upload = () => {
   const [upload, setUpload] = useState();
+  const [progress, setProgress] = useState(0);
   const uploadFile = () => {
     //make blob from file
     const blob = new Blob([upload], { type: upload.type });

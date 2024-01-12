@@ -10,10 +10,14 @@ import { storage } from './config/firebaseConfig';
 import vinyl from './assets/vinyl.svg';
 import './App.css';
 
+import Upload from './components/Upload'
+
 function App() {
   const [tracks, setTracks] = useState([]);
-  const [upload, setUpload] = useState();
-  const [progress, setProgress] = useState(0);
+  const [playerStatus, setPlayerStatus] = useState(false);
+
+  // const [upload, setUpload] = useState();
+  // const [progress, setProgress] = useState(0);
   const path = 'https://storage.googleapis.com/';
   useEffect(() => {
     const storageRef = ref(storage);
@@ -22,46 +26,47 @@ function App() {
         setTracks([
           ...tracks,
           {
-            name: itemRef.bucket,
+            name: itemRef.fullPath,
             path: path + itemRef.bucket + '/' + itemRef.fullPath,
           },
         ]);
-        console.log(itemRef);
+        // console.log(itemRef);
       })
     );
   }, []);
-  console.log(tracks[0]);
-  const uploadFile = () => {
-    const blob = new Blob([upload], { type: upload.type });
+  // console.log(tracks[0]);
+  // const uploadFile = () => {
+  //   const blob = new Blob([upload], { type: upload.type });
 
-    const uploadRef = ref(storage, upload.name);
-    // uploadBytes(uploadRef, upload).then((snapshot) => console.log(snapshot));
-    uploadBytesResumable(uploadRef, blob).on(
-      'state_changed',
-      (snapshot) => {
-        setProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-      },
-      (err) => console.log('error', err),
-      () => {
-        getDownloadURL(
-          uploadBytesResumable(uploadRef, upload).snapshot.ref
-        ).then((downloadURL) => console.log(downloadURL));
-        setProgress(0);
-      }
-    );
-  };
+  //   const uploadRef = ref(storage, upload.name);
+  //   // uploadBytes(uploadRef, upload).then((snapshot) => console.log(snapshot));
+  //   uploadBytesResumable(uploadRef, blob).on(
+  //     'state_changed',
+  //     (snapshot) => {
+  //       setProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+  //     },
+  //     (err) => console.log('error', err),
+  //     () => {
+  //       getDownloadURL(
+  //         uploadBytesResumable(uploadRef, upload).snapshot.ref
+  //       ).then((downloadURL) => console.log(downloadURL));
+  //       setProgress(0);
+  //     }
+  //   );
+  // };
   return (
     <>
       <div className="vinyl ">
-        <img src={vinyl} alt="" className="active-spin" />
+        <img src={vinyl} alt="" className={`${playerStatus ? "active-spin": " "}`} />
       </div>
       {tracks && (
         <div className="audio">
-          {}
-          <audio controls src={tracks[0]?.path} type="audio/mpeg"></audio>
+          <p>{tracks[0]?.name}</p>
+          <audio controls src={tracks[0]?.path} type="audio/mpeg" onPlay={()=> setPlayerStatus(true)} onPause={()=> setPlayerStatus(false)}></audio>
         </div>
       )}
-      <div className="input_file">
+      <Upload/>
+      {/* <div className="input_file">
         <input type="file" onChange={(e) => setUpload(e.target.files[0])} />
         <button onClick={uploadFile}>Upload</button>
         {progress > 0 && (
@@ -69,7 +74,7 @@ function App() {
             {progress}
           </progress>
         )}
-      </div>
+      </div> */}
     </>
   );
 }

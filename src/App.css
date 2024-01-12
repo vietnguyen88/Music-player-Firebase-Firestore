@@ -49,7 +49,7 @@
 }
 
 .active-spin {
-  animation: spin 10s linear 5s infinite normal forwards;
+  animation: spin 10s linear infinite normal forwards;
 }
 
 @keyframes spin {
